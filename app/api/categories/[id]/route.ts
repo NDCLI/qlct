@@ -3,9 +3,11 @@ import { adminDb } from "@/lib/firebase-admin";
 import { getAuthUser } from "@/lib/api-helpers";
 
 // PUT /api/categories/[id]
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { user, error } = await getAuthUser();
   if (error) return error;
+
+  const { id } = await params;
 
   try {
     const { name, icon, color } = await req.json();
@@ -17,7 +19,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       .collection("users")
       .doc(user!.id)
       .collection("categories")
-      .doc(params.id);
+      .doc(id);
 
     await ref.update({ name, icon, color });
     const doc = await ref.get();
@@ -29,16 +31,18 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE /api/categories/[id]
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { user, error } = await getAuthUser();
   if (error) return error;
+
+  const { id } = await params;
 
   try {
     await adminDb
       .collection("users")
       .doc(user!.id)
       .collection("categories")
-      .doc(params.id)
+      .doc(id)
       .delete();
 
     return NextResponse.json({ success: true });

@@ -3,9 +3,11 @@ import { adminDb } from "@/lib/firebase-admin";
 import { getAuthUser } from "@/lib/api-helpers";
 
 // PUT /api/transactions/[id]
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { user, error } = await getAuthUser();
   if (error) return error;
+
+  const { id } = await params;
 
   try {
     const body = await req.json();
@@ -19,7 +21,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       .collection("users")
       .doc(user!.id)
       .collection("transactions")
-      .doc(params.id);
+      .doc(id);
 
     const doc = await docRef.get();
     if (!doc.exists) {
@@ -37,7 +39,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     await docRef.update(updateData);
 
-    return NextResponse.json({ id: params.id, ...doc.data(), ...updateData });
+    return NextResponse.json({ id, ...doc.data(), ...updateData });
   } catch (err) {
     console.error("PUT /api/transactions/[id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -45,16 +47,18 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE /api/transactions/[id]
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { user, error } = await getAuthUser();
   if (error) return error;
+
+  const { id } = await params;
 
   try {
     const docRef = adminDb
       .collection("users")
       .doc(user!.id)
       .collection("transactions")
-      .doc(params.id);
+      .doc(id);
 
     const doc = await docRef.get();
     if (!doc.exists) {
