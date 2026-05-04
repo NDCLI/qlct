@@ -28,8 +28,30 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^9",
     "eslint-config-next": "^15.2.0",
-    "postcss": "^8",
+    "postcss": "^8.5.10",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "uuid": "^11.0.0",
+    "postcss": "^8.5.10",
+    "next-auth": {
+      "uuid": "^11.0.0"
+    },
+    "firebase-admin": {
+      "uuid": "^11.0.0"
+    },
+    "@google-cloud/storage": {
+      "uuid": "^11.0.0"
+    },
+    "google-gax": {
+      "uuid": "^11.0.0"
+    },
+    "gaxios": {
+      "uuid": "^11.0.0"
+    },
+    "teeny-request": {
+      "uuid": "^11.0.0"
+    }
   }
 }
